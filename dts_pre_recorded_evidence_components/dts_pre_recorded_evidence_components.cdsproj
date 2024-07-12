@@ -50,6 +50,7 @@
   
   <ItemGroup>
     <ProjectReference Include="../MKPlayer/mkplayer.pcfproj" />
+    <ProjectReference Include="../AzureMediaPlayer/AzureMediaPlayer.pcfproj" />
   </ItemGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
