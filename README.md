@@ -46,8 +46,8 @@ To deploy a component, run the following command from the root of the project:
 
 ```bash
 cd dts_pre_recorded_evidence_components
-dotnet build
 pac solution version --buildversion <version number>
+dotnet build
 ```
 
 This will output a zip file in `dts_pre_recorded_evidence_components/bin/Debug/dts_pre_recorded_evidence_components.zip`. This zip file can be imported into a solution to use the component here: <https://make.powerapps.com/environments/3df85815-859a-e884-8b20-6a6dac1054a1/solutions> (replace the environment ID with the ID of the environment you want to deploy to).
