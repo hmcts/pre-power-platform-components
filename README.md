@@ -45,6 +45,12 @@ npm run start watch
 To deploy a component, run the following command from the root of the project:
 
 ```bash
+cd <component name>
+npm version patch
+npm run build
+```
+
+```bash
 cd dts_pre_recorded_evidence_components
 pac solution version --buildversion <version number>
 dotnet build

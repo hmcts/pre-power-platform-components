@@ -59,9 +59,15 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
         let player = new mkplayer.MKPlayer(videoContainer, playerConfig);
 
         const sourceConfig = {
-            title: context.parameters.Title.raw || '',
-            hls: context.parameters.HLS.raw || undefined,
-            dash: context.parameters.Dash.raw || undefined,
+            hls: context.parameters.HLS.raw || '',
+            drm: {
+                clearkey: {
+                    LA_URL: 'HLS_AES',
+                    headers: {
+                        Authorization: 'Bearer=' + context.parameters.Token.raw || '',
+                    },
+                },
+            },
         };
 
         player.load(sourceConfig);
