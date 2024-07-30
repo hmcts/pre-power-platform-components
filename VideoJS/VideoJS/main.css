@@ -1,0 +1,44 @@
+.video-js {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+.vjs-control-bar {
+    background-color: black !important;
+}
+
+.vjs-volume-vertical {
+    background-color: black !important;
+}
+
+.video-js .vjs-load-progress div {
+    background-color: #939393 !important;
+}
+
+.vjs-slider {
+    background-color: #414141 !important;
+}
+
+.video-js .vjs-time-control{
+    display: block !important;
+}
+
+.vjs-play-progress .vjs-time-tooltip {
+    display: none !important;
+}
+
+.video-js .vjs-big-play-button {
+    width: 80px !important;
+    height: 80px !important;
+    color: #ffffff !important;
+    border-radius: 0% !important;
+    border: 3px solid #ffffff !important;
+    font-size: 50px !important;
+    line-height: 80px !important;
+    text-align: center !important;
+}
+
+.vjs-texttrack-settings {
+  display: none !important;
+}

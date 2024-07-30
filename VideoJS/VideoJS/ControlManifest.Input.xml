@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+  <control namespace="pre" constructor="VideoJS" version="0.0.1" display-name-key="VideoJS"
+    description-key="VideoJS description" control-type="standard">
+
+    <property name="videoUrl" display-name-key="Video URL"
+      description-key="The URL of the video to be played." of-type="SingleLine.URL" usage="input"
+      required="true"
+      default-value="https://mkplayer.azureedge.net/$web/streams/slate/hls/index.m3u8" />
+    <property name="isLive" display-name-key="Is Live"
+      description-key="If enabled the video will be played in live mode." of-type="TwoOptions"
+      usage="input" required="true" default-value="false" />
+    <property name="hasJwtRestriction" display-name-key="Has JWT Restriction"
+      description-key="If enabled the JWT token will sent in an authorization header."
+      of-type="TwoOptions" usage="input" required="true" default-value="false" />
+    <property name="jwtToken" display-name-key="JWT Token"
+      description-key="The JWT token to be sent in the authorization header."
+      of-type="SingleLine.Text"
+      usage="input" required="false" default-value="" />
+
+    <property name="currentTime" display-name-key="Current Time"
+      description-key="The current time of the video in seconds." of-type="SingleLine.Text"
+      usage="output" required="false" />
+    <property name="playing" display-name-key="Playing"
+      description-key="Indicates if the video is currently playing." of-type="TwoOptions"
+      usage="output" required="false" default-value="false" />
+
+    <event name="OnPlay" display-name-key="On Play"
+      description-key="Fires when the video starts playing." />
+    <event name="OnPause" display-name-key="On Pause"
+      description-key="Fires when the video is paused." />
+    <event name="OnEnd" display-name-key="On Ended" description-key="Fires when the video ends." />
+
+    <resources>
+      <code path="index.ts" order="1" />
+      <css path="main.css" order="1" />
+    </resources>
+  </control>
+</manifest>
