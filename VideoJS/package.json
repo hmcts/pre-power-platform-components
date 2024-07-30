@@ -1,6 +1,6 @@
 {
   "name": "videojs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Project containing your PowerApps Component Framework (PCF) control.",
   "scripts": {
     "build": "pcf-scripts build",
