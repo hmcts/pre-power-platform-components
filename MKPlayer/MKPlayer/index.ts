@@ -2,8 +2,11 @@ import { IInputs, IOutputs } from './generated/ManifestTypes';
 import * as mkplayer from '@mediakind/mkplayer';
 
 export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOutputs> {
-    private _currentTime: string;
+    private _currentTime: number;
     private _isPlaying: boolean;
+    private _duration: number;
+    private _start: boolean;
+    private _startTime: number;
     private _notifyOutputChanged: () => void;
     private _onPlay: () => void;
     private _onPause: () => void;
@@ -35,6 +38,8 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
         this._playerLicenseKey = context.parameters.MkPlayerLicenseKey.raw ?? '';
         this._jwtToken = context.parameters.jwtToken.raw ?? '';
         this._isJwtRestricted = context.parameters.hasJwtRestriction.raw;
+        this._startTime = context.parameters.startTime.raw ?? 0;
+        this._start = context.parameters.start.raw ?? false;
         this._state = state;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,7 +90,7 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
         this._MKPlayer = new mkplayer.MKPlayer(this._videoElement, playerConfig);
     }
 
-    private _loadVideo(): void {
+    private async _loadVideo(): Promise<void> {
         const sourceConfig = {
             hls: this._context.parameters.videoUrl.raw || '',
             drm: {
@@ -98,17 +103,20 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
             },
         };
 
-        this._MKPlayer.load(sourceConfig);
+        await this._MKPlayer.load(sourceConfig);
+        this._MKPlayer.seek(this._startTime);
     }
 
     public refreshData(): void {
-        this._currentTime = this._MKPlayer.getCurrentTime().toString();
+        this._currentTime = Number(this._MKPlayer.getCurrentTime().toFixed(2));
         this._isPlaying = this._MKPlayer.isPlaying();
+        this._duration = Number(this._MKPlayer.getDuration().toFixed(2));
         this._notifyOutputChanged();
     }
 
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         if (
+            context.parameters.reset.raw === true ||
             context.parameters.videoUrl.raw != this._videoUrl ||
             context.parameters.MkPlayerLicenseKey.raw != this._playerLicenseKey ||
             context.parameters.jwtToken.raw != this._jwtToken ||
@@ -118,6 +126,21 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
             this.init(context, this._notifyOutputChanged, this._state, this._container);
         }
 
+        if (context.parameters.start.raw != this._start) {
+            if (context.parameters.start.raw === true) {
+                this._MKPlayer.play();
+                this._start = true;
+            } else {
+                this._MKPlayer.pause();
+                this._start = false
+            }
+        }
+
+        if (context.parameters.startTime.raw != this._startTime) {
+            this._startTime = context.parameters.startTime.raw ?? 0;
+            this._MKPlayer.seek(this._startTime);
+        }
+
         this._context = context;
     }
 
@@ -125,6 +148,9 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
         return {
             currentTime: this._currentTime,
             playing: this._isPlaying,
+            duration: this._duration,
+            reset: false,
+            start: this._isPlaying,
         };
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="pre" constructor="MKPlayer" version="1.0.4" display-name-key="MKPlayer"
+  <control namespace="pre" constructor="MKPlayer" version="1.0.5" display-name-key="MKPlayer"
     description-key="MediaKind Player" control-type="standard">
 
     <property name="videoUrl" display-name-key="Video URL"
@@ -14,15 +14,29 @@
       description-key="The JWT token to be sent in the authorization header."
       of-type="SingleLine.Text"
       usage="input" required="false" default-value="" />
-    <property name="MkPlayerLicenseKey" display-name-key="MKPlayer License Key" description-key="Player license key available in the MediaKind Portal."
-      of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="MkPlayerLicenseKey" display-name-key="MKPlayer License Key"
+      description-key="Player license key available in the MediaKind Portal."
+      of-type="SingleLine.Text" usage="input" required="true" />
 
     <property name="currentTime" display-name-key="Current Time"
-      description-key="The current time of the video in seconds." of-type="SingleLine.Text"
+      description-key="The current time of the video in seconds." of-type="Decimal"
       usage="output" required="false" />
     <property name="playing" display-name-key="Playing"
       description-key="Indicates if the video is currently playing." of-type="TwoOptions"
       usage="output" required="false" default-value="false" />
+    <property name="duration" display-name-key="Duration"
+      description-key="The duration of the video in seconds." of-type="Decimal"
+      usage="output" required="false" />
+
+    <property name="start" display-name-key="Start Playback"
+      description-key="Start the video playback." of-type="TwoOptions" usage="bound"
+      required="false" default-value="false" />
+    <property name="reset" display-name-key="Reset Playback"
+      description-key="Reset the video playback." of-type="TwoOptions" usage="bound"
+      required="false" default-value="false" />
+    <property name="startTime" display-name-key="Start Time"
+      description-key="The time in seconds to start the video playback." of-type="Decimal"
+      usage="bound" required="false" default-value="0" />
 
     <event name="OnPlay" display-name-key="On Play"
       description-key="Fires when the video starts playing." />
