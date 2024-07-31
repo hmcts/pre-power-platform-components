@@ -1,67 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="pre" constructor="MKPlayer" version="0.0.1" display-name-key="MKPlayer"
+  <control namespace="pre" constructor="MKPlayer" version="1.0.3" display-name-key="MKPlayer"
     description-key="MediaKind Player" control-type="standard">
-    <!--external-service-usage
-    node declares whether this 3rd party PCF control is using external service or not, if yes, this
-    control will be considered as premium and please also add the external domain it is using.
-    If it is not using any external service, please set the enabled="false" and DO NOT add any domain
-    below. The "enabled" will be false by default.
-    Example1:
-      <external-service-usage enabled="true">
-        <domain>www.Microsoft.com</domain>
-      </external-service-usage>
-    Example2:
-      <external-service-usage enabled="false">
-      </external-service-usage>
-    -->
-    <external-service-usage enabled="false">
-      <!--UNCOMMENT
-      TO ADD EXTERNAL DOMAINS
-      <domain></domain>
-      <domain></domain>
-      -->
-    </external-service-usage>
-    <!-- property node identifies a specific, configurable piece of data that the control expects
-    from CDS -->
-    <property name="HLS" display-name-key="HLS" description-key="HLS stream URL"
-      of-type="SingleLine.Text" usage="bound" required="false" />
-    <property name="Token" display-name-key="Token" description-key="Authorization Jwt Token"
-      of-type="SingleLine.Text" usage="bound" required="true" />
-    <property name="LicenseKey" display-name-key="LicenseKey" description-key="Player license key"
+
+    <property name="videoUrl" display-name-key="Video URL"
+      description-key="The URL of the video to be played." of-type="SingleLine.URL" usage="input"
+      required="true"
+      default-value="https://mkplayer.azureedge.net/$web/streams/slate/hls/index.m3u8" />
+    <property name="hasJwtRestriction" display-name-key="Has JWT Restriction"
+      description-key="If enabled the JWT token will sent in an authorization header."
+      of-type="TwoOptions" usage="input" required="true" default-value="false" />
+    <property name="jwtToken" display-name-key="JWT Token"
+      description-key="The JWT token to be sent in the authorization header."
+      of-type="SingleLine.Text"
+      usage="input" required="false" default-value="" />
+    <property name="MkPlayerLicenseKey" display-name-key="MKPlayer License Key" description-key="Player license key available in the MediaKind Portal."
       of-type="SingleLine.Text" usage="bound" required="true" />
 
-    <property name="EventName" display-name-key="Name" description-key="The name"
-      of-type="SingleLine.Text" usage="output" required="true" />
-    <property name="EventValue" display-name-key="Value" description-key="The value"
-      of-type="SingleLine.Text" usage="output" required="false" />
-    <!--
-      Property node's of-type attribute can be of-type-group attribute.
-      Example:
-      <type-group name="numbers">
-        <type>Whole.None</type>
-        <type>Currency</type>
-        <type>FP</type>
-        <type>Decimal</type>
-      </type-group>
-      <property name="sampleProperty" display-name-key="Property_Display_Key"
-    description-key="Property_Desc_Key" of-type-group="numbers" usage="bound" required="true" />
-    -->
+    <property name="currentTime" display-name-key="Current Time"
+      description-key="The current time of the video in seconds." of-type="SingleLine.Text"
+      usage="output" required="false" />
+    <property name="playing" display-name-key="Playing"
+      description-key="Indicates if the video is currently playing." of-type="TwoOptions"
+      usage="output" required="false" default-value="false" />
+
+    <event name="OnPlay" display-name-key="On Play"
+      description-key="Fires when the video starts playing." />
+    <event name="OnPause" display-name-key="On Pause"
+      description-key="Fires when the video is paused." />
+    <event name="OnEnd" display-name-key="On Ended" description-key="Fires when the video ends." />
+
     <resources>
       <code path="index.ts" order="1" />
       <css path="css/MKPlayer.css" order="1" />
     </resources>
-    <!-- UNCOMMENT TO ENABLE THE SPECIFIED API
-    <feature-usage>
-      <uses-feature name="Device.captureAudio" required="true" />
-      <uses-feature name="Device.captureImage" required="true" />
-      <uses-feature name="Device.captureVideo" required="true" />
-      <uses-feature name="Device.getBarcodeValue" required="true" />
-      <uses-feature name="Device.getCurrentPosition" required="true" />
-      <uses-feature name="Device.pickFile" required="true" />
-      <uses-feature name="Utility" required="true" />
-      <uses-feature name="WebAPI" required="true" />
-    </feature-usage>
-    -->
   </control>
 </manifest>
