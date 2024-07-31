@@ -50,6 +50,8 @@ npm version patch
 npm run build
 ```
 
+Also bump the version number in the `ControlManifest.Input.xml` file.
+
 ```bash
 cd dts_pre_recorded_evidence_components
 pac solution version --buildversion <version number>
