@@ -8,6 +8,7 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
     private _onPlay: () => void;
     private _onPause: () => void;
     private _onEnd: () => void;
+    private _videoElement: HTMLDivElement;
     private _MKPlayer: mkplayer.MKPlayer;
     private _container: HTMLDivElement;
     private _context: ComponentFramework.Context<IInputs>;
@@ -52,8 +53,8 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
     }
 
     private _initPlayer(): void {
-        const videoElement = document.createElement('div');
-        videoElement.setAttribute('id', 'video-container');
+        this._videoElement = document.createElement('div');
+        this._videoElement.setAttribute('id', 'video-container');
 
         const playerConfig = {
             key: this._context.parameters.MkPlayerLicenseKey.raw || 'key',
@@ -80,8 +81,8 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
             },
         };
 
-        this._container.appendChild(videoElement);
-        this._MKPlayer = new mkplayer.MKPlayer(videoElement, playerConfig);
+        this._container.appendChild(this._videoElement);
+        this._MKPlayer = new mkplayer.MKPlayer(this._videoElement, playerConfig);
     }
 
     private _loadVideo(): void {
@@ -129,5 +130,6 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
 
     public destroy(): void {
         this._MKPlayer.destroy();
+        this._container.removeChild(this._videoElement);
     }
 }
