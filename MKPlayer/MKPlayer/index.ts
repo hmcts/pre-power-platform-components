@@ -111,6 +111,14 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
         this._currentTime = Number(this._MKPlayer.getCurrentTime().toFixed(2));
         this._isPlaying = this._MKPlayer.isPlaying();
         this._duration = Number(this._MKPlayer.getDuration().toFixed(2));
+
+        if (!isFinite(this._currentTime)) {
+            this._currentTime = 0;
+        }
+        if (!isFinite(this._duration)) {
+            this._duration = 0;
+        }
+
         this._notifyOutputChanged();
     }
 
