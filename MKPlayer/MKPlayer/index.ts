@@ -140,7 +140,7 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
                 this._start = true;
             } else {
                 this._MKPlayer.pause();
-                this._start = false
+                this._start = false;
             }
         }
 
