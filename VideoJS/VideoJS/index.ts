@@ -36,7 +36,7 @@ const livePlayerOptions: videojs.VideoJsPlayerOptions = {
             'playToggle',
             'currentTimeDisplay',
             'progressControl',
-            'liveDisplay',
+            'seekToLive',
             'volumePanel',
             'fullscreenToggle',
         ],
@@ -45,21 +45,17 @@ const livePlayerOptions: videojs.VideoJsPlayerOptions = {
 };
 
 export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOutputs> {
-    private _currentTime: string;
-    private _isPlaying: boolean;
     private _notifyOutputChanged: () => void;
     private _onPlay: () => void;
     private _onPause: () => void;
     private _onEnd: () => void;
-    private _videoJSPlayer: Player;
+    private _onReady: () => void;
+    private _onError: () => void;
     private _container: HTMLDivElement;
+    private _videoJSPlayer: Player;
     private _context: ComponentFramework.Context<IInputs>;
-    private _refreshData: () => void;
     private _videoUrl: string;
-    private _isLive: boolean;
-    private _jwtToken: string;
-    private _isJwtRestricted: boolean;
-    private _state: ComponentFramework.Dictionary;
+    private _autoPlay: boolean;
 
     constructor() {}
 
@@ -72,12 +68,8 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._context = context;
         this._container = container;
         this._notifyOutputChanged = notifyOutputChanged;
-        this._refreshData = this.refreshData.bind(this);
         this._videoUrl = context.parameters.videoUrl.raw ?? '';
-        this._isLive = context.parameters.isLive.raw;
-        this._jwtToken = context.parameters.jwtToken.raw ?? '';
-        this._isJwtRestricted = context.parameters.hasJwtRestriction.raw;
-        this._state = state;
+        this._autoPlay = context.parameters.autoPlay.raw;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onPlay = (context as any).events?.OnPlay;
@@ -85,10 +77,16 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._onPause = (context as any).events?.OnPause;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onEnd = (context as any).events?.OnEnd;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this._onReady = (context as any).events?.OnReady;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this._onError = (context as any).events?.OnError;
 
         this._onPlay = this._onPlay ? this._onPlay.bind(this) : () => {};
         this._onPause = this._onPause ? this._onPause.bind(this) : () => {};
-        this._onEnd = this._onEnd ? this._onEnd.bind(this) : () => {};
+        this._onEnd = this._onEnd ? this._onEnd.bind(this) : () => { };
+        this._onReady = this._onReady ? this._onReady.bind(this) : () => { };
+        this._onError = this._onError ? this._onError.bind(this) : () => { };
 
         this._initPlayer();
         this._loadVideo();
@@ -128,14 +126,18 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         }
 
         this._container.appendChild(videoElement);
-        this._videoJSPlayer = vjs('video-js', this._context.parameters.isLive.raw ? livePlayerOptions : playerOptions);
+        let options = this._context.parameters.isLive.raw ? livePlayerOptions : playerOptions;
+        options = {
+            ...options,
+            autoplay: this._autoPlay,
+        };
+        this._videoJSPlayer = vjs('video-js', options);
 
-        this._videoJSPlayer.on('timeupdate', this._refreshData);
-        this._videoJSPlayer.on('play', this._refreshData);
-        this._videoJSPlayer.on('pause', this._refreshData);
         this._videoJSPlayer.on('play', this._onPlay);
         this._videoJSPlayer.on('pause', this._onPause);
         this._videoJSPlayer.on('ended', this._onEnd);
+        this._videoJSPlayer.on('loadeddata', this._onReady);
+        this._videoJSPlayer.on('error', this._onError);
     }
 
     private _loadVideo(): void {
@@ -145,40 +147,33 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         });
     }
 
-    public refreshData(): void {
-        this._currentTime = this._videoJSPlayer?.currentTime()?.toString() ?? '';
-        this._isPlaying = this._videoJSPlayer?.paused() === false;
-        this._notifyOutputChanged();
-    }
-
     public updateView(context: ComponentFramework.Context<IInputs>): void {
-        if (
-            context.parameters.videoUrl.raw != this._videoUrl ||
-            context.parameters.isLive.raw != this._isLive ||
-            context.parameters.jwtToken.raw != this._jwtToken ||
-            context.parameters.hasJwtRestriction.raw != this._isJwtRestricted
-        ) {
+        if (context.parameters.reset.raw === true) {
             this.destroy();
-            this.init(context, this._notifyOutputChanged, this._state, this._container);
+            this.init(context, this._notifyOutputChanged, {}, this._container);
+            this._notifyOutputChanged();
+            return;
         }
 
-        this._context = context;
+        if (
+            context.parameters.videoUrl.raw != this._videoUrl
+        ) {
+            this._loadVideo();
+        }
     }
 
     public getOutputs(): IOutputs {
         return {
-            currentTime: this._currentTime,
-            playing: this._isPlaying,
+            reset: false,
         };
     }
 
     public destroy(): void {
-        this._videoJSPlayer.off('timeupdate', this._refreshData);
-        this._videoJSPlayer.off('play', this._refreshData);
-        this._videoJSPlayer.off('pause', this._refreshData);
-        this._videoJSPlayer.off('play', this._context.events.OnPlay);
-        this._videoJSPlayer.off('pause', this._context.events.OnPause);
-        this._videoJSPlayer.off('ended', this._context.events.OnEnd);
+        this._videoJSPlayer.off('play', this._onPlay);
+        this._videoJSPlayer.off('pause', this._onPause);
+        this._videoJSPlayer.off('ended', this._onEnd);
+        this._videoJSPlayer.off('loadeddata', this._onReady);
+        this._videoJSPlayer.off('error', this._onError);
         this._videoJSPlayer.dispose();
     }
 }

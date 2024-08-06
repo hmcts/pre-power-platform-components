@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="pre" constructor="VideoJS" version="1.0.2" display-name-key="VideoJS"
+  <control namespace="pre" constructor="VideoJS" version="1.0.7" display-name-key="VideoJS"
     description-key="VideoJS description" control-type="standard">
 
     <property name="videoUrl" display-name-key="Video URL"
@@ -17,19 +17,23 @@
       description-key="The JWT token to be sent in the authorization header."
       of-type="SingleLine.Text"
       usage="input" required="false" default-value="" />
+    <property name="autoPlay" display-name-key="Auto Play"
+      description-key="If enabled the video will start playing automatically." of-type="TwoOptions"
+      usage="input" required="false" default-value="false" />
 
-    <property name="currentTime" display-name-key="Current Time"
-      description-key="The current time of the video in seconds." of-type="SingleLine.Text"
-      usage="output" required="false" />
-    <property name="playing" display-name-key="Playing"
-      description-key="Indicates if the video is currently playing." of-type="TwoOptions"
-      usage="output" required="false" default-value="false" />
+    <property name="reset" display-name-key="Reset Playback"
+      description-key="Reset the video playback." of-type="TwoOptions" usage="bound"
+      required="false" default-value="false" />
 
     <event name="OnPlay" display-name-key="On Play"
       description-key="Fires when the video starts playing." />
     <event name="OnPause" display-name-key="On Pause"
       description-key="Fires when the video is paused." />
     <event name="OnEnd" display-name-key="On Ended" description-key="Fires when the video ends." />
+    <event name="OnReady" display-name-key="On Ready"
+      description-key="Fires when the video is ready to play." />
+    <event name="OnError" display-name-key="On Error"
+      description-key="Fires when an error occurs during playback." />
 
     <resources>
       <code path="index.ts" order="1" />
