@@ -1,5 +1,6 @@
 import { IInputs, IOutputs } from './generated/ManifestTypes';
 import _vjs from 'video.js';
+import MediaError from 'video.js/dist/types/media-error';
 import Player from 'video.js/dist/types/player';
 import 'video.js/dist/video-js.css';
 
@@ -50,12 +51,14 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
     private _onPause: () => void;
     private _onEnd: () => void;
     private _onReady: () => void;
+    private _onLiveReady: () => void;
     private _onError: () => void;
     private _container: HTMLDivElement;
     private _videoJSPlayer: Player;
     private _context: ComponentFramework.Context<IInputs>;
     private _videoUrl: string;
     private _autoPlay: boolean;
+    private _isLive: boolean;
 
     constructor() {}
 
@@ -70,6 +73,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._notifyOutputChanged = notifyOutputChanged;
         this._videoUrl = context.parameters.videoUrl.raw ?? '';
         this._autoPlay = context.parameters.autoPlay.raw;
+        this._isLive = context.parameters.isLive.raw;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onPlay = (context as any).events?.OnPlay;
@@ -80,13 +84,16 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onReady = (context as any).events?.OnReady;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this._onLiveReady = (context as any).events?.OnLiveReady;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onError = (context as any).events?.OnError;
 
         this._onPlay = this._onPlay ? this._onPlay.bind(this) : () => {};
         this._onPause = this._onPause ? this._onPause.bind(this) : () => {};
-        this._onEnd = this._onEnd ? this._onEnd.bind(this) : () => { };
-        this._onReady = this._onReady ? this._onReady.bind(this) : () => { };
-        this._onError = this._onError ? this._onError.bind(this) : () => { };
+        this._onEnd = this._onEnd ? this._onEnd.bind(this) : () => {};
+        this._onReady = this._onReady ? this._onReady.bind(this) : () => {};
+        this._onLiveReady = this._onLiveReady ? this._onLiveReady.bind(this) : () => {};
+        this._onError = this._onError ? this._onError.bind(this) : () => {};
 
         this._initPlayer();
         this._loadVideo();
@@ -138,6 +145,37 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._videoJSPlayer.on('ended', this._onEnd);
         this._videoJSPlayer.on('loadeddata', this._onReady);
         this._videoJSPlayer.on('error', this._onError);
+        this._videoJSPlayer.on('ready', this._checkLiveReady.bind(this));
+    }
+
+    private _checkLiveReady(): void {
+        if (!this._isLive) return;
+
+        const checkLiveReady = setInterval(() => {
+            const duration = this._videoJSPlayer.duration() || 0;
+            const currentTime = this._videoJSPlayer.currentTime() || 0;
+            if (duration === 0 && currentTime === 0) return;
+        
+            this._onLiveReady();
+            clearInterval(checkLiveReady);
+
+            const checkIsLive = setInterval(() => {
+                const duration = this._videoJSPlayer.duration() || 0;
+                const currentTime = this._videoJSPlayer.currentTime() || 0;
+
+                if (duration === Infinity) return;
+
+                this._onEnd();
+                clearInterval(checkIsLive);
+            }, 5000);
+
+            this._videoJSPlayer.on('error', (e: MediaError) => {
+                if (e.code === 4) {
+                    clearInterval(checkIsLive);
+                    this._onEnd();
+                }
+            });
+        }, 1000);
     }
 
     private _loadVideo(): void {
@@ -155,9 +193,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
             return;
         }
 
-        if (
-            context.parameters.videoUrl.raw != this._videoUrl
-        ) {
+        if (context.parameters.videoUrl.raw != this._videoUrl) {
             this._loadVideo();
         }
     }
@@ -169,11 +205,12 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
     }
 
     public destroy(): void {
-        this._videoJSPlayer.off('play', this._onPlay);
-        this._videoJSPlayer.off('pause', this._onPause);
-        this._videoJSPlayer.off('ended', this._onEnd);
-        this._videoJSPlayer.off('loadeddata', this._onReady);
-        this._videoJSPlayer.off('error', this._onError);
+        this._videoJSPlayer.off('play');
+        this._videoJSPlayer.off('pause');
+        this._videoJSPlayer.off('ended');
+        this._videoJSPlayer.off('loadeddata');
+        this._videoJSPlayer.off('error');
+        this._videoJSPlayer.off('ready');
         this._videoJSPlayer.dispose();
     }
 }

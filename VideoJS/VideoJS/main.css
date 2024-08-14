@@ -29,14 +29,8 @@
 }
 
 .video-js .vjs-big-play-button {
-    width: 80px !important;
-    height: 80px !important;
-    color: #ffffff !important;
     border-radius: 0% !important;
     border: 3px solid #ffffff !important;
-    font-size: 50px !important;
-    line-height: 80px !important;
-    text-align: center !important;
 }
 
 .vjs-texttrack-settings {
