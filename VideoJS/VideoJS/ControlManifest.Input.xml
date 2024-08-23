@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="pre" constructor="VideoJS" version="1.0.10" display-name-key="VideoJS"
+  <control namespace="pre" constructor="VideoJS" version="1.0.11" display-name-key="VideoJS"
     description-key="VideoJS description" control-type="standard">
 
     <property name="videoUrl" display-name-key="Video URL"
@@ -23,6 +23,9 @@
 
     <property name="reset" display-name-key="Reset Playback"
       description-key="Reset the video playback." of-type="TwoOptions" usage="bound"
+      required="false" default-value="false" />
+    <property name="play" display-name-key="Play Video"
+      description-key="Whether the video should be playing." of-type="TwoOptions" usage="bound"
       required="false" default-value="false" />
 
     <event name="OnPlay" display-name-key="On Play"

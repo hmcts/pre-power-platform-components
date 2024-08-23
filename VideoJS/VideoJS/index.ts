@@ -59,6 +59,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
     private _videoUrl: string;
     private _autoPlay: boolean;
     private _isLive: boolean;
+    private _play: boolean;
 
     constructor() {}
 
@@ -74,6 +75,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._videoUrl = context.parameters.videoUrl.raw ?? '';
         this._autoPlay = context.parameters.autoPlay.raw;
         this._isLive = context.parameters.isLive.raw;
+        this._play = this._autoPlay;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onPlay = (context as any).events?.OnPlay;
@@ -140,8 +142,14 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         };
         this._videoJSPlayer = vjs('video-js', options);
 
-        this._videoJSPlayer.on('play', this._onPlay);
-        this._videoJSPlayer.on('pause', this._onPause);
+        this._videoJSPlayer.on('play', () => {
+            this._play = true;
+            this._onPlay();
+        });
+        this._videoJSPlayer.on('pause', () => {
+            this._play = false;
+            this._onPause();
+        });
         this._videoJSPlayer.on('ended', this._onEnd);
         this._videoJSPlayer.on('loadeddata', this._onReady);
         this._videoJSPlayer.on('error', this._onError);
@@ -193,6 +201,16 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
             return;
         }
 
+        if (context.parameters.play.raw !== this._play) {
+            this._play = context.parameters.play.raw;
+            if (this._play) {
+                this._videoJSPlayer.play();
+            } else {
+                this._videoJSPlayer.pause();
+            }
+            this._notifyOutputChanged();
+        }
+
         if (context.parameters.videoUrl.raw != this._videoUrl) {
             this._loadVideo();
         }
@@ -201,6 +219,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
     public getOutputs(): IOutputs {
         return {
             reset: false,
+            play: this._play,
         };
     }
 
