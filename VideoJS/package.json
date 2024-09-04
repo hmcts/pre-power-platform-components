@@ -1,6 +1,6 @@
 {
   "name": "videojs",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Custom PCF control for VideoJS",
   "scripts": {
     "build": "pcf-scripts build",

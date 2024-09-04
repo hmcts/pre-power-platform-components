@@ -177,11 +177,17 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
                 clearInterval(checkIsLive);
             }, 5000);
 
+            this._videoJSPlayer.off('error');
             this._videoJSPlayer.on('error', (e: MediaError) => {
-                if (e.code === 4) {
+                if (e.code === e.MEDIA_ERR_SRC_NOT_SUPPORTED || e.code === e.MEDIA_ERR_NETWORK) {
                     clearInterval(checkIsLive);
                     this._onEnd();
                 }
+                this._onError();
+            });
+            this._videoJSPlayer.tech_.on('retryplaylist', () => {
+                clearInterval(checkIsLive);
+                this._onEnd();
             });
         }, 1000);
     }
