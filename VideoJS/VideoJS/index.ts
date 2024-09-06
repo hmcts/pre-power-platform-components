@@ -142,6 +142,15 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         };
         this._videoJSPlayer = vjs('video-js', options);
 
+        if (this._context.parameters.isLive.raw) {
+            const progress_control = this._container.getElementsByClassName('vjs-progress-control');
+
+            if (progress_control.length > 0) {
+                progress_control[0].attributes.setNamedItem(document.createAttribute('style'));
+                progress_control[0].setAttribute('style', 'visibility: hidden !important');
+            }
+        }
+
         this._videoJSPlayer.on('play', () => {
             this._play = true;
             this._onPlay();
@@ -173,6 +182,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
 
                 if (duration === Infinity) return;
 
+                this._videoJSPlayer.pause();
                 this._onEnd();
                 clearInterval(checkIsLive);
             }, 5000);
@@ -181,12 +191,14 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
             this._videoJSPlayer.on('error', (e: MediaError) => {
                 if (e.code === e.MEDIA_ERR_SRC_NOT_SUPPORTED || e.code === e.MEDIA_ERR_NETWORK) {
                     clearInterval(checkIsLive);
+                    this._videoJSPlayer.pause();
                     this._onEnd();
                 }
                 this._onError();
             });
             this._videoJSPlayer.tech_.on('retryplaylist', () => {
                 clearInterval(checkIsLive);
+                this._videoJSPlayer.pause();
                 this._onEnd();
             });
         }, 1000);
