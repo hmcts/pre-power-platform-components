@@ -112,8 +112,9 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
             };
 
             vjs.Vhs.xhr.beforeRequest = (options: XhrOptions) => {
-                const targetUrl = 'mkio.tv3cloud.com';
-                if (!options.uri.includes(targetUrl)) {
+                const mkUrl = 'mkio.tv3cloud.com';
+                const amsUrl = 'keydelivery.uksouth.media.azure.net';
+                if (!options.uri.includes(mkUrl) && !options.uri.includes(amsUrl)) {
                     return options;
                 }
 
