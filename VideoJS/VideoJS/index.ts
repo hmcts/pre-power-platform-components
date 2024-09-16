@@ -30,17 +30,7 @@ const playerOptions: videojs.VideoJsPlayerOptions = {
 const livePlayerOptions: videojs.VideoJsPlayerOptions = {
     ...playerOptions,
     controlBar: {
-        volumePanel: {
-            inline: false,
-        },
-        children: [
-            'playToggle',
-            'currentTimeDisplay',
-            'progressControl',
-            'seekToLive',
-            'volumePanel',
-            'fullscreenToggle',
-        ],
+        children: []
     },
     liveui: true,
 };
@@ -149,6 +139,18 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
                 progress_control[0].attributes.setNamedItem(document.createAttribute('style'));
                 progress_control[0].setAttribute('style', 'visibility: hidden !important');
             }
+
+            const liveVideoStyle = document.createElement('style');
+            liveVideoStyle.innerHTML = `
+                .video-js .vjs-tech {
+                    pointer-events: none;
+                }
+                
+                .video-js .vjs-control-bar {
+                    display: none;
+                }
+            `;
+            this._container.appendChild(liveVideoStyle);
         }
 
         this._videoJSPlayer.on('play', () => {
@@ -189,17 +191,12 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
 
             this._videoJSPlayer.off('error');
             this._videoJSPlayer.on('error', (e: MediaError) => {
-                if (e.code === e.MEDIA_ERR_SRC_NOT_SUPPORTED || e.code === e.MEDIA_ERR_NETWORK) {
+                if (e.code === e.MEDIA_ERR_SRC_NOT_SUPPORTED) {
                     clearInterval(checkIsLive);
                     this._videoJSPlayer.pause();
                     this._onEnd();
                 }
                 this._onError();
-            });
-            this._videoJSPlayer.tech_.on('retryplaylist', () => {
-                clearInterval(checkIsLive);
-                this._videoJSPlayer.pause();
-                this._onEnd();
             });
         }, 1000);
     }
