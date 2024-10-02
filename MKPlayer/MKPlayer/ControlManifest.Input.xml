@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="pre" constructor="MKPlayer" version="1.0.14" display-name-key="MKPlayer"
+  <control namespace="pre" constructor="MKPlayer" version="1.1.1.1" display-name-key="MKPlayer"
     description-key="MediaKind Player" control-type="standard">
 
     <property name="videoUrl" display-name-key="Video URL"
@@ -33,7 +33,11 @@
     <event name="OnReady" display-name-key="On Ready"
       description-key="Fires when the video is ready to play." />
     <event name="OnError" display-name-key="On Error"
-      description-key="Fires when an error occurs during playback." />
+           description-key="Fires when an error occurs during playback." />
+    <event name="OnStallStarted" display-name-key="On Stall Started"
+           description-key="Fires when player stops receiving more data." />
+    <event name="OnStallEnded" display-name-key="On Stall Ended"
+           description-key="Fires when player starts receiving data again after a stall." />
 
     <resources>
       <code path="index.ts" order="1" />

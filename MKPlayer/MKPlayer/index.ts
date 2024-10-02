@@ -8,6 +8,8 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
     private _onEnd: () => void;
     private _onReady: () => void;
     private _onError: () => void;
+    private _onStallStarted: () => void;
+    private _onStallEnded: () => void;
     private _container: HTMLDivElement;
     private _videoElement: HTMLDivElement;
     private _MKPlayer: mkplayer.MKPlayer;
@@ -39,12 +41,18 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
         this._onReady = (context as any).events?.OnReady;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onError = (context as any).events?.OnError;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this._onStallStarted = (context as any).events?.OnStallStarted;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this._onStallEnded = (context as any).events?.OnStallEnded;
 
         this._onPlay = this._onPlay ? this._onPlay.bind(this) : () => {};
         this._onPause = this._onPause ? this._onPause.bind(this) : () => {};
         this._onEnd = this._onEnd ? this._onEnd.bind(this) : () => { };
         this._onReady = this._onReady ? this._onReady.bind(this) : () => { };
         this._onError = this._onError ? this._onError.bind(this) : () => { };
+        this._onStallStarted = this._onStallStarted ? this._onStallStarted.bind(this) : () => { };
+        this._onStallEnded = this._onStallEnded ? this._onStallEnded.bind(this) : () => { };
 
         this._initPlayer();
         this._loadVideo();
@@ -76,6 +84,12 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
                 },
                 [mkplayer.MKPlayerEvent.Error]: () => {
                     this._onError();
+                },
+                [mkplayer.MKPlayerEvent.StallStarted]: () => {
+                    this._onStallStarted();
+                },
+                [mkplayer.MKPlayerEvent.StallEnded]: () => {
+                    this._onStallEnded();
                 },
             },
         };
