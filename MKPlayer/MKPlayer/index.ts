@@ -77,6 +77,9 @@ export class MKPlayer implements ComponentFramework.StandardControl<IInputs, IOu
                 [mkplayer.MKPlayerEvent.Error]: () => {
                     this._onError();
                 },
+                [mkplayer.MKPlayerEvent.StallStarted]: () => {
+                    this._onError();
+                },
             },
         };
 
