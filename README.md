@@ -6,8 +6,21 @@ This repo contains the source code for the custom PCF components used in Power A
 
 - Visual Studio Code
 - [Power Platform Tools](https://marketplace.visualstudio.com/items?itemName=microsoft-IsvExpTools.powerplatform-vscode) extension for Visual Studio Code
+- [.NET Core SDK](https://dotnet.microsoft.com/download) greater than 8.0
 - After installing the Power Platform Tools extension you can use the `pac` command in the VSCode terminal
 - Node.js
+
+.NET Core SDK can be installed on MacOS using Homebrew:
+
+```bash
+brew install --cask dotnet-sdk
+```
+
+The PAC CLI can be installed outside of Visual Studio Code by running the following command:
+
+```bash
+dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+```
 
 ## Creating a new component
 
