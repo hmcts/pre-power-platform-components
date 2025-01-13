@@ -123,6 +123,17 @@ This will output a zip file in `dts_pre_recorded_evidence_components/bin/Debug/d
 - After importing the solution make sure to click `Publish all customizations` in the solutions page.
 - When entering the canvas app editor you should be prompted to update the component.
 
+### Component events are not available in the canvas app editor
+
+To enable events for a custom compoennt add a `featureconfig.json` file to the root of the component with the 
+following contents:
+
+```json
+{
+    "pcfAllowEvents": "on"
+}
+```
+
 ### Webresource content size is too big
 
 When importing the solution you may receive the error `Webresource content size is too big`. [This is the fix](https://powerusers.microsoft.com/t5/Power-Apps-Pro-Dev-ISV/imported-PCF-solution-error/m-p/552539/highlight/true#M2373).
