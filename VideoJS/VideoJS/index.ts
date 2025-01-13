@@ -42,6 +42,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
     private _onEnd: () => void;
     private _onReady: () => void;
     private _onLiveReady: () => void;
+    private _onLiveWaiting: () => void;
     private _onError: () => void;
     private _container: HTMLDivElement;
     private _videoJSPlayer: Player;
@@ -78,13 +79,16 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onLiveReady = (context as any).events?.OnLiveReady;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this._onLiveWaiting = (context as any).events?.OnLiveWaiting;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onError = (context as any).events?.OnError;
 
         this._onPlay = this._onPlay ? this._onPlay.bind(this) : () => {};
         this._onPause = this._onPause ? this._onPause.bind(this) : () => {};
         this._onEnd = this._onEnd ? this._onEnd.bind(this) : () => {};
         this._onReady = this._onReady ? this._onReady.bind(this) : () => {};
-        this._onLiveReady = this._onLiveReady ? this._onLiveReady.bind(this) : () => {};
+        this._onLiveReady = this._onLiveReady ? this._onLiveReady.bind(this) : () => { };
+        this._onLiveWaiting = this._onLiveWaiting ? this._onLiveWaiting.bind(this) : () => { };
         this._onError = this._onError ? this._onError.bind(this) : () => {};
 
         this._initPlayer();
@@ -154,7 +158,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
             this._container.appendChild(liveVideoStyle);
         }
 
-        this._videoJSPlayer.on('play', () => {
+        this._videoJSPlayer.on('playing', () => {
             this._play = true;
             this._onPlay();
         });
@@ -165,12 +169,16 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._videoJSPlayer.on('ended', this._onEnd);
         this._videoJSPlayer.on('loadeddata', this._onReady);
         this._videoJSPlayer.on('error', this._onError);
-        this._videoJSPlayer.on('ready', this._checkLiveReady.bind(this));
+        this._videoJSPlayer.on('waiting', this._onLiveWaiting);
+        this._videoJSPlayer.on('canplaythrough', this._onLiveReady);
+        
+        if (this._isLive) {
+            this._videoJSPlayer.on('ready', this._checkLiveReady.bind(this));
+            this._videoJSPlayer.on('durationchange', this._onEnd);
+        }
     }
 
     private _checkLiveReady(): void {
-        if (!this._isLive) return;
-
         const checkLiveReady = setInterval(() => {
             const duration = this._videoJSPlayer.duration() || 0;
             const currentTime = this._videoJSPlayer.currentTime() || 0;
@@ -178,27 +186,6 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         
             this._onLiveReady();
             clearInterval(checkLiveReady);
-
-            const checkIsLive = setInterval(() => {
-                const duration = this._videoJSPlayer.duration() || 0;
-                const currentTime = this._videoJSPlayer.currentTime() || 0;
-
-                if (duration === Infinity) return;
-
-                this._videoJSPlayer.pause();
-                this._onEnd();
-                clearInterval(checkIsLive);
-            }, 5000);
-
-            this._videoJSPlayer.off('error');
-            this._videoJSPlayer.on('error', (e: MediaError) => {
-                if (e.code === e.MEDIA_ERR_SRC_NOT_SUPPORTED) {
-                    clearInterval(checkIsLive);
-                    this._videoJSPlayer.pause();
-                    this._onEnd();
-                }
-                this._onError();
-            });
         }, 1000);
     }
 
@@ -245,7 +232,10 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._videoJSPlayer.off('ended');
         this._videoJSPlayer.off('loadeddata');
         this._videoJSPlayer.off('error');
+        this._videoJSPlayer.off('waiting');
+        this._videoJSPlayer.off('canplaythrough');
         this._videoJSPlayer.off('ready');
+        this._videoJSPlayer.off('durationchange');
         this._videoJSPlayer.dispose();
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="pre" constructor="MKPlayer" version="1.0.14" display-name-key="MKPlayer"
+  <control namespace="pre" constructor="MKPlayer" version="1.0.17" display-name-key="MKPlayer"
     description-key="MediaKind Player" control-type="standard">
 
     <property name="videoUrl" display-name-key="Video URL"

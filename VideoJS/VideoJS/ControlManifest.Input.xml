@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="pre" constructor="VideoJS" version="1.0.16" display-name-key="VideoJS"
+  <control namespace="pre" constructor="VideoJS" version="1.0.22" display-name-key="VideoJS"
     description-key="VideoJS description" control-type="standard">
 
     <property name="videoUrl" display-name-key="Video URL"
@@ -37,6 +37,8 @@
       description-key="Fires when the video is ready to play." />
     <event name="OnLiveReady" display-name-key="On Live Ready"
       description-key="Fires when the live stream has started playing." />
+    <event name="OnLiveWaiting" display-name-key="On Live Waiting"
+      description-key="Fires if the live endpoint is available but data stops being received." />
     <event name="OnError" display-name-key="On Error"
       description-key="Fires when an error occurs during playback." />
 
