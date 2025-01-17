@@ -51,6 +51,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
     private _autoPlay: boolean;
     private _isLive: boolean;
     private _play: boolean;
+    private _waiting: boolean;
 
     constructor() {}
 
@@ -67,6 +68,7 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._autoPlay = context.parameters.autoPlay.raw;
         this._isLive = context.parameters.isLive.raw;
         this._play = this._autoPlay;
+        this._waiting = false;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this._onPlay = (context as any).events?.OnPlay;
@@ -169,13 +171,29 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._videoJSPlayer.on('ended', this._onEnd);
         this._videoJSPlayer.on('loadeddata', this._onReady);
         this._videoJSPlayer.on('error', this._onError);
-        this._videoJSPlayer.on('waiting', this._onLiveWaiting);
-        this._videoJSPlayer.on('canplaythrough', this._onLiveReady);
+        this._videoJSPlayer.on('waiting', this._checkLiveWaiting.bind(this));
+        this._videoJSPlayer.on('canplaythrough', this._canPlayThrough.bind(this));
         
         if (this._isLive) {
             this._videoJSPlayer.on('ready', this._checkLiveReady.bind(this));
             this._videoJSPlayer.on('durationchange', this._onEnd);
         }
+    }
+
+    private _checkLiveWaiting(): void {
+        if (this._waiting) return;
+        this._waiting = true;
+
+        setTimeout(() => {
+            if (this._waiting) {
+                this._onLiveWaiting();
+            }
+        }, 5000);
+    }
+
+    private _canPlayThrough(): void {
+        this._waiting = false;
+        this._onLiveReady();
     }
 
     private _checkLiveReady(): void {
