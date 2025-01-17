@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="pre" constructor="VideoJS" version="1.0.24" display-name-key="VideoJS"
+  <control namespace="pre" constructor="VideoJS" version="1.0.25" display-name-key="VideoJS"
     description-key="VideoJS description" control-type="standard">
 
     <property name="videoUrl" display-name-key="Video URL"

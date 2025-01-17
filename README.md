@@ -2,6 +2,9 @@
 
 This repo contains the source code for the custom PCF components used in Power Apps.
 
+> [!TIP]
+> A video walkthrough of the process can be found [here](https://teams.microsoft.com/v2/?tenantId=531ff96d-0ae9-462a-8d2d-bec7c0b42082).
+
 ## Pre-requisites
 
 - [.NET Core SDK](https://dotnet.microsoft.com/download) greater than 8.0
