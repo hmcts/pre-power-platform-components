@@ -163,10 +163,12 @@ export class VideoJS implements ComponentFramework.StandardControl<IInputs, IOut
         this._videoJSPlayer.on('playing', () => {
             this._play = true;
             this._onPlay();
+            this._notifyOutputChanged();
         });
         this._videoJSPlayer.on('pause', () => {
             this._play = false;
             this._onPause();
+            this._notifyOutputChanged();
         });
         this._videoJSPlayer.on('ended', this._onEnd);
         this._videoJSPlayer.on('loadeddata', this._onReady);
