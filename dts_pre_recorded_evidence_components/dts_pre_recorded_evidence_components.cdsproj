@@ -50,7 +50,6 @@
   
   <ItemGroup>
     <ProjectReference Include="../MKPlayer/mkplayer.pcfproj" />
-    <ProjectReference Include="../AzureMediaPlayer/AzureMediaPlayer.pcfproj" />
     <ProjectReference Include="../VideoJS/VideoJS.pcfproj" />
   </ItemGroup>
 
