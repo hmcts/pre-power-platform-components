@@ -1,6 +1,6 @@
 {
   "name": "mk-player",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Custom PCF control for MKPlayer",
   "scripts": {
     "build": "pcf-scripts build",
