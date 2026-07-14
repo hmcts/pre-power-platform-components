@@ -15,6 +15,17 @@
   "dependencies": {
     "@mediakind/mkplayer": "^1.40.0"
   },
+  "overrides": {
+    "flatted": "^3.4.2",
+    "js-yaml": "^4.1.2",
+    "lodash": "^4.17.24",
+    "minimatch": "^3.1.4",
+    "picomatch": "^2.3.2",
+    "@opentelemetry/core": "^2.8.0",
+    "@opentelemetry/resources": "^2.8.0",
+    "@opentelemetry/sdk-trace-base": "^2.8.0",
+    "applicationinsights": "^3.8.0"
+  },
   "devDependencies": {
     "@microsoft/eslint-plugin-power-apps": "^0.2.6",
     "@types/node": "^18.8.2",
